@@ -3,22 +3,25 @@ import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.client.DeliverCallback;
 
-public class Receiver {
-    private final static String QUEUE_NAME = "hello";
+import java.io.IOException;
+import java.util.concurrent.TimeoutException;
 
-    public static void main(String[] argv) throws Exception {
-        ConnectionFactory connectionFactory = new ConnectionFactory();
-        connectionFactory.setHost("localhost");
-        Connection connection = connectionFactory.newConnection();
-        Channel channel = connection.createChannel();
+public abstract class Receiver {
+	private final String QUEUE_NAME;
+	private final ConnectionFactory connectionFactory;
 
-        channel.queueDeclare(QUEUE_NAME, false, false, false, null);
-        System.out.println(" [*] Waiting for messages. To exit press CTRL+C");
+	Receiver(final String queueName, final String host) {
+		QUEUE_NAME = queueName;
+		connectionFactory = new ConnectionFactory();
+		connectionFactory.setHost(host);
+	}
 
-        DeliverCallback deliverCallback = (consumerTag, delivery) -> {
-            String message = new String(delivery.getBody(), "UTF-8");
-            System.out.println(" [x] Received '" + message + "'");
-        };
-        channel.basicConsume(QUEUE_NAME, true, deliverCallback, consumerTag -> { });
-    }
+	void start() throws IOException, TimeoutException {
+		Connection connection = connectionFactory.newConnection();
+		Channel channel = connection.createChannel();
+		channel.queueDeclare(QUEUE_NAME, false, false, false, null);
+		channel.basicConsume(QUEUE_NAME, true, getDeliverCallback(), consumerTag -> { });
+	}
+
+	abstract DeliverCallback getDeliverCallback();
 }
