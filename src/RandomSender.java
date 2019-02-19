@@ -11,10 +11,14 @@ public class RandomSender extends Sender {
 		RANDOM = new Random();
 	}
 
+	/**
+	 *
+	 * @return string with random symbols with random length in range [1, MAX_LENGTH]
+	 */
 	@Override
 	String getMessage() {
 		int length = 1 + RANDOM.nextInt(MAX_LENGTH);
-		return getFixedString(length);
+		return getRandomString(length);
 	}
 
 	/**
@@ -22,7 +26,7 @@ public class RandomSender extends Sender {
 	 * @param length length of the returned random string
 	 * @return string from 'length' random symbols, whose codes in range [FIRST_CHAR, LAST_CHAR]
 	 */
-	private String getFixedString(int length) {
+	private String getRandomString(int length) {
 		StringBuilder buffer = new StringBuilder(length);
 		for (int i = 0; i < length; i++) {
 			int randomInt = FIRST_CHAR + RANDOM.nextInt(LAST_CHAR - FIRST_CHAR + 1);

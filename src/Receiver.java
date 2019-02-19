@@ -16,6 +16,11 @@ public abstract class Receiver {
 		connectionFactory.setHost(host);
 	}
 
+	/**
+	 * Create connection, channel, declare queue to get messages from, and handler function
+	 * @throws IOException
+	 * @throws TimeoutException
+	 */
 	void start() throws IOException, TimeoutException {
 		Connection connection = connectionFactory.newConnection();
 		Channel channel = connection.createChannel();

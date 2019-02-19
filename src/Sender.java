@@ -19,7 +19,14 @@ public abstract class Sender {
 		send(1);
 	}
 
-	public void send(int nMessages) throws IOException, TimeoutException {
+	/**
+	 * Create connection, channel, declare queue to send messages.
+	 * Send specified amount of messages into declared queue.
+	 * @param nMessages amount of messages that sender will send to the queue
+	 * @throws TimeoutException
+	 * @throws IOException
+	 */
+	public void send(int nMessages) throws TimeoutException, IOException {
 		try (Connection connection = factory.newConnection();
 		    Channel channel = connection.createChannel()) {
 			channel.queueDeclare(QUEUE_NAME, false, false, false, null);

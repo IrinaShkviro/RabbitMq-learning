@@ -5,11 +5,15 @@ public class PrintingReceiver extends Receiver {
 		super(queueName, host);
 	}
 
+	/**
+	 *
+	 * @return function that prints received message to console
+	 */
 	@Override
 	DeliverCallback getDeliverCallback() {
 		return (consumerTag, delivery) -> {
 			String message = new String(delivery.getBody(), "UTF-8");
-			System.out.println("Received message '" + message + "'");
+			System.out.println("Received message: '" + message + "'");
 		};
 	}
 }
