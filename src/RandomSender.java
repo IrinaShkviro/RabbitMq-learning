@@ -1,5 +1,8 @@
 import java.util.Random;
 
+/**
+ * The RandomSender is a Sender to send random strings to the queue with 'queue_name' on host 'host'
+ */
 public class RandomSender extends Sender {
 	private final Random RANDOM;
 	private final int MAX_LENGTH = 256;

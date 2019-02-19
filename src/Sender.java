@@ -5,6 +5,10 @@ import com.rabbitmq.client.Channel;
 import java.io.IOException;
 import java.util.concurrent.TimeoutException;
 
+/**
+ * Sender is a class to send messages to the specified queue on the specified host
+ * The messages to send are identified by abstract function getMessage()
+ */
 public abstract class Sender {
 	private final String QUEUE_NAME;
 	private final ConnectionFactory factory;

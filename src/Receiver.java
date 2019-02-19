@@ -6,6 +6,10 @@ import com.rabbitmq.client.DeliverCallback;
 import java.io.IOException;
 import java.util.concurrent.TimeoutException;
 
+/**
+ * Receiver is a class to get messages from specified queue on specified host and process them
+ * The handle function is identified by abstract function getDeliverCallback()
+ */
 public abstract class Receiver {
 	private final String QUEUE_NAME;
 	private final ConnectionFactory connectionFactory;

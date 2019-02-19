@@ -1,5 +1,8 @@
 import com.rabbitmq.client.DeliverCallback;
 
+/**
+ * Printing receiver is a class to print messages from specified queue on specified host
+ */
 public class PrintingReceiver extends Receiver {
 	public PrintingReceiver(final String queueName, final String host) {
 		super(queueName, host);
