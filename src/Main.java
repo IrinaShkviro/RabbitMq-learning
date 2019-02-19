@@ -6,18 +6,12 @@ public class Main {
 		final String queueName = "Test";
 		final String host = "localhost";
 
-		Receiver printingReceiver = new PrintingReceiver(queueName, host);
-		try {
+		try (Receiver printingReceiver = new PrintingReceiver(queueName, host)) {
 			printingReceiver.start();
+			Sender randomSender = new RandomSender(queueName, host);
+			randomSender.send(3);
 		} catch (TimeoutException | IOException exception) {
-			System.out.println("Error occurred when tried to start receiver. " + exception.getMessage());
-		}
-
-		Sender randomSender = new RandomSender(queueName, host);
-		try {
-			randomSender.send(2);
-		} catch (TimeoutException | IOException exception) {
-			System.out.println("Error occurred when tried to send message. " + exception.getMessage());
+			System.out.println(exception.getMessage());
 		}
 	}
 }

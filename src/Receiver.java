@@ -8,11 +8,13 @@ import java.util.concurrent.TimeoutException;
 
 /**
  * Receiver is a class to get messages from specified queue on specified host and process them
- * The handle function is identified by abstract function getDeliverCallback()
+ * The handle function is identified by abstract function getHandler()
  */
-public abstract class Receiver {
+public abstract class Receiver implements AutoCloseable{
 	private final String QUEUE_NAME;
 	private final ConnectionFactory connectionFactory;
+	private Connection connection = null;
+	private Channel channel = null;
 
 	Receiver(final String queueName, final String host) {
 		QUEUE_NAME = queueName;
@@ -26,11 +28,27 @@ public abstract class Receiver {
 	 * @throws TimeoutException
 	 */
 	void start() throws IOException, TimeoutException {
-		Connection connection = connectionFactory.newConnection();
-		Channel channel = connection.createChannel();
-		channel.queueDeclare(QUEUE_NAME, false, false, false, null);
-		channel.basicConsume(QUEUE_NAME, true, getDeliverCallback(), consumerTag -> { });
+		if (channel != null && channel.isOpen()) {
+			throw new RuntimeException("Connection was already opened");
+		}
+		connection = connectionFactory.newConnection();
+		channel = connection.createChannel();
+		channel.queueDeclare(QUEUE_NAME, true, false, false, null);
+		DeliverCallback deliverCallback = (consumerTag, delivery) -> {
+			try {
+				getHandler().handle(consumerTag, delivery);
+			} finally {
+				channel.basicAck(delivery.getEnvelope().getDeliveryTag(), false);
+			}
+		};
+		channel.basicConsume(QUEUE_NAME, false, deliverCallback, consumerTag -> { });
 	}
 
-	abstract DeliverCallback getDeliverCallback();
+	@Override
+	public void close() throws IOException, TimeoutException {
+		channel.close();
+		connection.close();
+	}
+
+	abstract DeliverCallback getHandler();
 }

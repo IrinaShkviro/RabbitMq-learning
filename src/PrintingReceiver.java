@@ -13,7 +13,7 @@ public class PrintingReceiver extends Receiver {
 	 * @return function that prints received message to console
 	 */
 	@Override
-	DeliverCallback getDeliverCallback() {
+	DeliverCallback getHandler() {
 		return (consumerTag, delivery) -> {
 			String message = new String(delivery.getBody(), "UTF-8");
 			System.out.println("Received message: '" + message + "'");

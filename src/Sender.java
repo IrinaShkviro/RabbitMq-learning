@@ -1,6 +1,7 @@
 import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.Channel;
+import com.rabbitmq.client.MessageProperties;
 
 import java.io.IOException;
 import java.util.concurrent.TimeoutException;
@@ -33,12 +34,14 @@ public abstract class Sender {
 	public void send(int nMessages) throws TimeoutException, IOException {
 		try (Connection connection = factory.newConnection();
 		    Channel channel = connection.createChannel()) {
-			channel.queueDeclare(QUEUE_NAME, false, false, false, null);
+			channel.queueDeclare(QUEUE_NAME, true, false, false, null);
 
 			for (int i = 0; i < nMessages; i++) {
 				String message = getMessage();
-				channel.basicPublish("", QUEUE_NAME, null, message.getBytes());
+				channel.basicPublish("", QUEUE_NAME, MessageProperties.PERSISTENT_TEXT_PLAIN, message.getBytes());
 			}
+
+			channel.queueDelete(QUEUE_NAME);
 		}
 	}
 
