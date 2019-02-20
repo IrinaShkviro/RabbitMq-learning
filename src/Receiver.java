@@ -1,6 +1,3 @@
-import com.rabbitmq.client.Channel;
-import com.rabbitmq.client.Connection;
-import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.client.DeliverCallback;
 
 import java.io.IOException;
@@ -10,16 +7,9 @@ import java.util.concurrent.TimeoutException;
  * Receiver is a class to get messages from specified queue on specified host and process them
  * The handle function is identified by abstract function getHandler()
  */
-public abstract class Receiver implements AutoCloseable{
-	private final String QUEUE_NAME;
-	private final ConnectionFactory connectionFactory;
-	private Connection connection = null;
-	private Channel channel = null;
-
+public abstract class Receiver extends QueueWorker{
 	Receiver(final String queueName, final String host) {
-		QUEUE_NAME = queueName;
-		connectionFactory = new ConnectionFactory();
-		connectionFactory.setHost(host);
+		super(queueName, host);
 	}
 
 	/**
@@ -42,12 +32,6 @@ public abstract class Receiver implements AutoCloseable{
 			}
 		};
 		channel.basicConsume(QUEUE_NAME, false, deliverCallback, consumerTag -> { });
-	}
-
-	@Override
-	public void close() throws IOException, TimeoutException {
-		channel.close();
-		connection.close();
 	}
 
 	abstract DeliverCallback getHandler();

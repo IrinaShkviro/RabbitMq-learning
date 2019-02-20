@@ -26,8 +26,8 @@ public class RandomSender extends Sender {
 
 	/**
 	 *
-	 * @param length length of the returned random string
-	 * @return string from 'length' random symbols, whose codes in range [FIRST_CHAR, LAST_CHAR]
+	 * @param length - length of the returned random string
+	 * @return string with 'length' random symbols, whose codes in range [FIRST_CHAR, LAST_CHAR]
 	 */
 	private String getRandomString(int length) {
 		StringBuilder buffer = new StringBuilder(length);

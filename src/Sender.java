@@ -1,6 +1,3 @@
-import com.rabbitmq.client.ConnectionFactory;
-import com.rabbitmq.client.Connection;
-import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.MessageProperties;
 
 import java.io.IOException;
@@ -10,14 +7,9 @@ import java.util.concurrent.TimeoutException;
  * Sender is a class to send messages to the specified queue on the specified host
  * The messages to send are identified by abstract function getMessage()
  */
-public abstract class Sender {
-	private final String QUEUE_NAME;
-	private final ConnectionFactory factory;
-
+public abstract class Sender extends QueueWorker {
 	public Sender(final String queueName, final String host) {
-		QUEUE_NAME = queueName;
-		factory = new ConnectionFactory();
-		factory.setHost(host);
+		super(queueName, host);
 	}
 
 	public void send() throws IOException, TimeoutException {
@@ -32,16 +24,15 @@ public abstract class Sender {
 	 * @throws IOException
 	 */
 	public void send(int nMessages) throws TimeoutException, IOException {
-		try (Connection connection = factory.newConnection();
-		    Channel channel = connection.createChannel()) {
+		if (channel == null) {
+			connection = connectionFactory.newConnection();
+			channel = connection.createChannel();
 			channel.queueDeclare(QUEUE_NAME, true, false, false, null);
+		}
 
-			for (int i = 0; i < nMessages; i++) {
-				String message = getMessage();
-				channel.basicPublish("", QUEUE_NAME, MessageProperties.PERSISTENT_TEXT_PLAIN, message.getBytes());
-			}
-
-			channel.queueDelete(QUEUE_NAME);
+		for (int i = 0; i < nMessages; i++) {
+			String message = getMessage();
+			channel.basicPublish("", QUEUE_NAME, MessageProperties.PERSISTENT_TEXT_PLAIN, message.getBytes());
 		}
 	}
 
