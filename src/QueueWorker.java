@@ -21,13 +21,18 @@ public class QueueWorker implements AutoCloseable {
     }
 
     protected boolean openConnectionIfNotExist() throws TimeoutException, IOException{
-        if (connection == null || !connection.isOpen()) {
+        if (connection != null && connection.isOpen()) {
+            return false;
+        }
+        synchronized(this) {
+            if (connection != null && connection.isOpen()) {
+                return false;
+            }
             connection = connectionFactory.newConnection();
             channel = connection.createChannel();
             channel.queueDeclare(QUEUE_NAME, true, false, false, null);
             return true;
         }
-        return false;
     }
 
     @Override
