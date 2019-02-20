@@ -20,6 +20,12 @@ public class QueueWorker implements AutoCloseable {
         connectionFactory.setHost(host);
     }
 
+    /**
+     * Checks if connection has opened and open it if it hasn't opened.
+     * @return true if connection was opened, false otherwise
+     * @throws TimeoutException
+     * @throws IOException
+     */
     protected boolean openConnectionIfNotExist() throws TimeoutException, IOException{
         if (connection != null && connection.isOpen()) {
             return false;
