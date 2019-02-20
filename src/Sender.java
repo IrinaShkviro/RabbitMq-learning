@@ -24,11 +24,7 @@ public abstract class Sender extends QueueWorker {
 	 * @throws IOException
 	 */
 	public void send(int nMessages) throws TimeoutException, IOException {
-		if (channel == null) {
-			connection = connectionFactory.newConnection();
-			channel = connection.createChannel();
-			channel.queueDeclare(QUEUE_NAME, true, false, false, null);
-		}
+		openConnectionIfNotExist();
 
 		for (int i = 0; i < nMessages; i++) {
 			String message = getMessage();

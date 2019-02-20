@@ -18,12 +18,9 @@ public abstract class Receiver extends QueueWorker{
 	 * @throws TimeoutException
 	 */
 	void start() throws IOException, TimeoutException {
-		if (channel != null && channel.isOpen()) {
+		if (!openConnectionIfNotExist()) {
 			throw new RuntimeException("Connection was already opened");
 		}
-		connection = connectionFactory.newConnection();
-		channel = connection.createChannel();
-		channel.queueDeclare(QUEUE_NAME, true, false, false, null);
 		DeliverCallback deliverCallback = (consumerTag, delivery) -> {
 			try {
 				getHandler().handle(consumerTag, delivery);
