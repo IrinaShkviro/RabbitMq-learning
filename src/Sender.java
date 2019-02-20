@@ -23,7 +23,7 @@ public abstract class Sender extends QueueWorker {
 	 * @throws TimeoutException
 	 * @throws IOException
 	 */
-	public void send(int nMessages) throws TimeoutException, IOException {
+	public void send(final int nMessages) throws TimeoutException, IOException {
 		openConnectionIfNotExist();
 
 		for (int i = 0; i < nMessages; i++) {
